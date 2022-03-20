@@ -1,4 +1,4 @@
-# **PRÁCTICA X. XXXXX **
+# PRÁCTICA X.  XXXXX
 
 Alumno: Ainoa Iglesias Dasilva
 
@@ -8,4 +8,4 @@ Asignatura: Desarrollo de sistemas informáticos
 
 Curso: 3º, 2021/22
 
-[GitHubPages]()
+## PASOS SEGUIDOS
