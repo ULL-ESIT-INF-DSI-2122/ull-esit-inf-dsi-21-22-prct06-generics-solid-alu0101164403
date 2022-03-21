@@ -1,4 +1,4 @@
-# **PRÁCTICA X. XXXXX **
+# **PRÁCTICA 6.  CLASES E INTERFACES ABSTRACTAS **
 
 Alumno: Ainoa Iglesias Dasilva
 
