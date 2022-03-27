@@ -5,7 +5,7 @@ import {PrintableCollection} from './PrintableCollection';
  * una coleccion de numeros representados en una cadena.
  * Hereda de la clase abstracta PrintableCollection
  */
-export class c
+export class NumericPrintableCollection
   extends PrintableCollection<number> {
   /**
    * constructor que recibe como parametro una lista de numeros

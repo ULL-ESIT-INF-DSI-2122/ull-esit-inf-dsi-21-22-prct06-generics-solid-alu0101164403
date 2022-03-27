@@ -1,10 +1,12 @@
-import {genres, ItemStremeable} from './interfaces';
+import {genres} from './interfaces';
+import {BasicStreamableItem} from './BasicStreamableItem';
 
-export class Serie implements ItemStremeable {
+export class Serie extends BasicStreamableItem {
   constructor(readonly name: string, readonly yearPublication: number,
     readonly genre: genres[], readonly averageScore: number,
     readonly recommended: boolean, readonly description: string,
     readonly numberSeasons:number) {
+    super(name, yearPublication, genre, averageScore, recommended, description);
   }
 
   public print(): string {

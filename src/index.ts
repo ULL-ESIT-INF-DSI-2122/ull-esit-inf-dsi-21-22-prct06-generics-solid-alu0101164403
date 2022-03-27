@@ -1,4 +1,6 @@
+import {DecodificadorCesar} from './ejercicio-3/DecodificarCesar';
 
-console.log();
-console.log('Hola Mundo');
+const cifrado1: DecodificadorCesar = new DecodificadorCesar('KAMWQUNDO',
+    'CLAVE', 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
 
+console.log(cifrado1.decodificar());

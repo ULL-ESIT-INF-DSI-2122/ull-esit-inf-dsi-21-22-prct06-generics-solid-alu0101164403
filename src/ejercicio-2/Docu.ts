@@ -1,9 +1,10 @@
-import {genresDocu, ItemStremeable} from './interfaces';
-
-export class Docu implements ItemStremeable {
+import {genresDocu} from './interfaces';
+import {BasicStreamableItem} from './BasicStreamableItem';
+export class Docu extends BasicStreamableItem {
   constructor(readonly name: string, readonly yearPublication: number,
     readonly genre: genresDocu[], readonly averageScore: number,
     readonly recommended: boolean, readonly description: string) {
+    super(name, yearPublication, genre, averageScore, recommended, description);
   }
 
   public print(): string {
