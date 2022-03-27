@@ -11,16 +11,14 @@
  * interfaz generica con los datos basicos de un pokemon incluyendo
  * estadisticas bases
  */
-export interface datosContendiente<T> extends estadisticasBase {
+export interface datosContendiente extends estadisticasBase {
   readonly nombre:string;
-  readonly peso:number;
-  readonly altura:number;
-  readonly tipo: T;
+  readonly tipo: tipoPoder;
+  readonly frase: string;
 }
 /**
  * tipo de dato para el tipo de pokemon, no puede haber otros tipos
  * que no aparezca aqui
  */
-export type tipoPoder = 'planta'| 'fuego' | 'electrico' | 'agua' | 'fuerza';
-
-export type tipoArma = 'martillo'| 'puño' | 'arco' | 'magia';
+export type tipoPoder = 'planta'| 'fuego' | 'electrico' | 'agua' | 'fuerza' |
+'martillo'| 'puño' | 'arco' | 'magia';
