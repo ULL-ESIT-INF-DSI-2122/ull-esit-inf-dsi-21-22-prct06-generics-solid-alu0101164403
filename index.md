@@ -12,6 +12,244 @@ Curso: 3º, 2021/22
 
 ## EJERCICIO 1. EL COMBATE DEFINITIVO
 
+#### INTERFAZ
+
+- estadisticasBase: esta interfaz contiene los datos basicos de un luchador como son el ataque, vida, defensa y velocidad.
+
+```ts
+interface estadisticasBase {
+  readonly ataque:number;
+  readonly defensa:number;
+  readonly velocidad:number;
+  readonly hp:number;
+}
+```
+
+- datosContendiente: interfaz que contiene los datos de un contendiente como el nombre, tipo y las estadisticas base.
+
+```ts
+export interface datosContendiente extends estadisticasBase {
+  readonly nombre:string;
+  readonly tipo: tipoPoder;
+  readonly frase: string;
+}
+```
+
+- tipoPoder: tipo de dato creado para que contenga los tipo de poder de los contendientes.
+
+```ts
+export type tipoPoder = 'planta'| 'fuego' | 'electrico' | 'agua' | 'fuerza' |
+'martillo'| 'puño' | 'arco' | 'magia';
+```
+
+#### CLASES
+
+- Fighter: clase que representa un luchador, inplementa los datos de la interfaz datosContendiente. Comprueba que no se pasen valores negativos o vacíos.
+
+```ts
+export abstract class Fighter implements datosContendiente {
+  constructor(readonly nombre:string, readonly tipo: tipoPoder,
+    readonly frase: string, readonly ataque: number, readonly defensa: number,
+    readonly velocidad: number, readonly hp: number) {
+    const dicComprobar: {[key:string]: number} = {
+      'ataque': ataque,
+      'defensa': defensa,
+      'velocidad': velocidad,
+      'hp': hp,
+    };
+    for (const clave in dicComprobar) {
+      if (dicComprobar[clave] < 0) {
+        throw new Error(`El atributo ${clave} es menor que 0`);
+      }
+    }
+    if (nombre === '' || frase === '') {
+      throw new Error(`El nombre no puede estar vacío.`);
+    }
+  }
+}
+```
+
+- Universos: estas clases representan contendientes de cada universo, heredan de Fighter. 
+
+```ts
+export class UniversoDragonBall extends Fighter {
+  constructor(readonly nombre:string, readonly tipo: tipoPoder,
+    readonly frase: string, readonly ataque: number, readonly defensa: number,
+    readonly velocidad: number, readonly hp: number) {
+    super(nombre, tipo, frase, ataque, defensa, velocidad, hp);
+  }
+}
+```
+
+```ts
+export class UniversoMarvel extends Fighter {
+  constructor(readonly nombre:string, readonly tipo: tipoPoder,
+    readonly frase: string, readonly ataque: number, readonly defensa: number,
+    readonly velocidad: number, readonly hp: number) {
+    super(nombre, tipo, frase, ataque, defensa, velocidad, hp);
+  }
+}
+```
+
+```ts
+export class UniversoPokemon extends Fighter {
+  constructor(readonly nombre:string, readonly tipo: tipoPoder,
+    readonly frase: string, readonly ataque: number, readonly defensa: number,
+    readonly velocidad: number, readonly hp: number) {
+    super(nombre, tipo, frase, ataque, defensa, velocidad, hp);
+  }
+}
+```
+
+- Combat: clase que represenat un combate entre dos luchadores sean cual sea su universo. (es igual que el que implemente en la practica 5). Puesto que hay nuevos tipo de poderes tube que completar la matriz de eficacia y además para permitir cualquier tipo de luchador independientemente su universo, paso dos luchadores de tipo Fighter y no de un universo.
+
+```ts
+export class Combat {
+  constructor(readonly luchador1: Fighter, readonly luchador2: Fighter) {
+  }
+  private dañoRealizado(luchador1: Fighter, luchador2: Fighter): number {
+    const efectividad = matrizEfectividad[luchador1.tipo][luchador2.tipo];
+    // eslint-disable-next-line max-len
+    const daño:number = 50 * (luchador1.ataque / luchador2.defensa) * efectividad;
+    return daño;
+  }
+  public start(): string {
+    let hpLuch1:number = this.luchador1.hp;
+    let hpLuch2:number = this.luchador2.hp;
+    console.log(`Vida inicial: \n${this.luchador1.nombre} = ${hpLuch1}`);
+    console.log(`${this.luchador2.nombre} = ${hpLuch2}`);
+
+    while (hpLuch1 > 0) {
+      hpLuch2 -= this.dañoRealizado(this.luchador1, this.luchador2);
+
+      console.log(`Vida actual de los combatientes: \n
+      ${this.luchador1.nombre} -> ${hpLuch1}\n
+      ${this.luchador2.nombre} -> ${hpLuch2}`);
+      console.log(`${this.luchador1.nombre} dice: ${this.luchador1.frase}`);
+      if (hpLuch2 <= 0) break;
+      hpLuch1 -= this.dañoRealizado(this.luchador2, this.luchador1);
+
+      console.log(`Vida actual de los combatientes: \n
+      ${this.luchador1.nombre} -> ${hpLuch1}\n
+      ${this.luchador2.nombre} -> ${hpLuch2}`);
+      console.log(`${this.luchador2.nombre} dice: ${this.luchador2.frase}`);
+    }
+    if (hpLuch1 > 0) {
+      return this.luchador1.nombre;
+    } else {
+      return this.luchador2.nombre;
+    }
+  }
+}
+const efectivo = 2;
+const neutral = 1;
+const pocoEfectivo = 0.5;
+/**
+* diccionario de diccionarios con efectividades de los ataques, primero con
+* atacante y luego aparece el defensor
+*/
+const matrizEfectividad: {[key:string]: {[key:string]: number}} = {
+  'fuego': {'fuego': pocoEfectivo, 'agua': pocoEfectivo, 'planta': efectivo,
+    'electrico': neutral, 'fuerza': efectivo},
+  'agua': {'fuego': efectivo, 'agua': pocoEfectivo, 'planta': pocoEfectivo,
+    'electrico': pocoEfectivo, 'fuerza': neutral},
+  'planta': {'fuego': pocoEfectivo, 'agua': efectivo, 'planta': pocoEfectivo,
+    'electrico': neutral, 'fuerza': pocoEfectivo},
+  'electrico': {'fuego': neutral, 'agua': efectivo, 'planta': neutral,
+    'electrico': pocoEfectivo, 'fuerza': pocoEfectivo},
+  'fuerza': {'fuego': neutral, 'agua': efectivo, 'planta': neutral,
+    'electrico': pocoEfectivo, 'fuerza': neutral},
+};
+```
+
+- Pokedex: clase que contiene un atributo lista de luchadores. Implementa dos métodos para modificar la lista, para añadir elementos y eliminarlos.
+
+```ts
+export class Pokedex {
+  constructor(readonly listaLuchadores: Fighter[]) {
+  }
+  public addLuchador(nuevoLuchador: Fighter): void {
+    this.listaLuchadores.push(nuevoLuchador);
+  }
+  public deleteLuchador(indice: number): void {
+    this.listaLuchadores.slice(indice, 1);
+  }
+}
+```
+
+#### TEST
+
+```ts
+describe('Test ejercicio-1', () => {
+  // eslint-disable-next-line max-len
+  const pokemon1: UniversoPokemon = new UniversoPokemon('pikachu', 'electrico', 'pikapika', 52, 41, 65, 50);
+  // eslint-disable-next-line max-len
+  const marvel1: UniversoMarvel = new UniversoMarvel('thor', 'electrico', 'yo soy thor', 100, 41, 35, 500);
+  // eslint-disable-next-line max-len
+  const dragonB1: UniversoDragonBall = new UniversoDragonBall('goku', 'fuerza', 'no me rendire', 75, 95, 65, 100);
+
+  describe('Test clase UPokemon', () => {
+    it('Se comprueba que se crea un objeto correctamente', () => {
+      expect(pokemon1 instanceof Fighter).to.be.true;
+    });
+    it('Se comprueban getter de datos', () => {
+      expect(pokemon1.nombre).to.be.equal('pikachu');
+      expect(pokemon1.ataque).to.be.equal(52);
+      expect(pokemon1.frase).to.be.equal('pikapika');
+    });
+    // eslint-disable-next-line max-len
+    it('Se comprueban que no permite valores negativos ni vacios en los atributos', () => {
+      expect(() => {
+        new UniversoPokemon('Charmader', 'fuego', 'hola', -55, 55, 45, 2);
+      }).to.throw('El atributo ataque es menor que 0');
+      expect(() => {
+        new UniversoPokemon('', 'fuego', 'hola', 55, 55, 45, 2);
+      }).to.throw('El nombre no puede estar vacío.');
+    });
+
+    describe('Test clase UMarvel', () => {
+      it('Se comprueba que se crea un objeto correctamente', () => {
+        expect(marvel1 instanceof Fighter).to.be.true;
+      });
+      it('Se comprueban getter de datos', () => {
+        expect(marvel1.nombre).to.be.equal('thor');
+        expect(marvel1.defensa).to.be.equal(41);
+        expect(marvel1.hp).to.be.equal(500);
+      });
+    });
+
+    describe('Test clase UDragonBall', () => {
+      it('Se comprueba que se crea un objeto correctamente', () => {
+        expect(dragonB1 instanceof Fighter).to.be.true;
+      });
+      it('Se comprueban getter de datos', () => {
+        expect(dragonB1.nombre).to.be.equal('goku');
+        expect(dragonB1.ataque).to.be.equal(75);
+        expect(dragonB1.velocidad).to.be.equal(65);
+      });
+    });
+
+    describe('Test de la clase Combat usando Pokedex', () => {
+      const pokedex: Pokedex = new Pokedex([pokemon1, marvel1, dragonB1]);
+      // eslint-disable-next-line max-len
+      const combate: Combat = new Combat(pokedex.listaLuchadores[0], pokedex.listaLuchadores[0]);
+      // eslint-disable-next-line max-len
+      const combate2: Combat = new Combat(pokedex.listaLuchadores[1], pokedex.listaLuchadores[2]);
+
+      it('Se comprueba que se crea un objeto correctamente', () => {
+        expect(combate instanceof Combat).to.be.true;
+      });
+      it('Se comprueban que realiza un combate correctamente', () => {
+        expect(combate.start()).to.be.equal('pikachu');
+      });
+      it('Se comprueban que realiza un combate correctamente', () => {
+        expect(combate2.start()).to.be.equal('thor');
+      });
+    });
+  });
+});
+```
+
 ## EJERCICIO 2. DSIFLIX
 
 ##### INTERFACES
