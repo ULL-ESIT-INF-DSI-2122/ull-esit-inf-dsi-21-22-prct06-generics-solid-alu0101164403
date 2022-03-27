@@ -51,12 +51,14 @@ const pocoEfectivo = 0.5;
 */
 const matrizEfectividad: {[key:string]: {[key:string]: number}} = {
   'fuego': {'fuego': pocoEfectivo, 'agua': pocoEfectivo, 'planta': efectivo,
-    'electrico': neutral},
+    'electrico': neutral, 'fuerza': efectivo},
   'agua': {'fuego': efectivo, 'agua': pocoEfectivo, 'planta': pocoEfectivo,
-    'electrico': pocoEfectivo},
+    'electrico': pocoEfectivo, 'fuerza': neutral},
   'planta': {'fuego': pocoEfectivo, 'agua': efectivo, 'planta': pocoEfectivo,
-    'electrico': neutral},
+    'electrico': neutral, 'fuerza': pocoEfectivo},
   'electrico': {'fuego': neutral, 'agua': efectivo, 'planta': neutral,
-    'electrico': pocoEfectivo},
+    'electrico': pocoEfectivo, 'fuerza': pocoEfectivo},
+  'fuerza': {'fuego': neutral, 'agua': efectivo, 'planta': neutral,
+    'electrico': pocoEfectivo, 'fuerza': neutral},
 };
 

@@ -1,7 +1,7 @@
 import {Fighter} from './Fighter';
 
 export class Pokedex {
-  constructor(private listaLuchadores: Fighter[]) {
+  constructor(readonly listaLuchadores: Fighter[]) {
   }
   public addLuchador(nuevoLuchador: Fighter): void {
     this.listaLuchadores.push(nuevoLuchador);
