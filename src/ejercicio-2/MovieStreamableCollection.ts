@@ -1,6 +1,9 @@
 import {BasicStreamableCollection} from './BasicStreamableCollection';
 import {Movie} from './Movie';
 
+/**
+ * clase que representa una coleccion de peliculas
+ */
 export class MovieStreamableCollection
   extends BasicStreamableCollection<Movie> {
   constructor(readonly itemList: Movie[]) {

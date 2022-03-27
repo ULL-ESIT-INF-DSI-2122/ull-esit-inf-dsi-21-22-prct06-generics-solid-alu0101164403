@@ -1,6 +1,9 @@
 import {BasicStreamableCollection} from './BasicStreamableCollection';
 import {Docu} from './Docu';
 
+/**
+ * clase que representa una coleccion de documetales
+ */
 export class DocuStreamableCollection
   extends BasicStreamableCollection<Docu> {
   constructor(readonly itemList: Docu[]) {
