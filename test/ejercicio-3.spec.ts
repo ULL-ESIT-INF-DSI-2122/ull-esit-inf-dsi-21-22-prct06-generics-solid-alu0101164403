@@ -3,7 +3,7 @@ import {expect} from 'chai';
 import {DecodificadorCesar} from '../src/ejercicio-3/DecodificarCesar';
 import {CodificadorCesar} from '../src/ejercicio-3/CodificarCesar';
 
-describe('Test clase cifrado', () => {
+describe('Test ejercicio-2', () => {
   const cifrado1: CodificadorCesar = new CodificadorCesar('HOLAMUNDO', 'CLAVE',
       'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
   const cifrado2: CodificadorCesar = new CodificadorCesar('HOLAMUNDO', 'CLAVE',
@@ -27,17 +27,18 @@ describe('Test clase cifrado', () => {
       }).to.throw('No se ha introducido un mensaje valido');
     });
     it('Se comprueban getters', () => {
-      expect(cifrado1.getMensaje()).to.be.equal('HOLAMUNDO');
-      expect(cifrado1.getAlfabeto()).to.be.equal('ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
-      expect(cifrado1.getClave()).to.be.equal('CLAVE');
+      expect(cifrado1.mensaje.getMensaje()).to.be.equal('HOLAMUNDO');
+      // eslint-disable-next-line max-len
+      expect(cifrado1.alfabeto.getAlfabeto()).to.be.equal('ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+      expect(cifrado1.clave.getClave()).to.be.equal('CLAVE');
     });
     it('Se comprueban setters', () => {
-      cifrado2.setMensaje('adios');
-      cifrado2.setAlfabeto('acbdghijskoz');
-      cifrado2.setClave('casa');
-      expect(cifrado2.getMensaje()).to.be.equal('adios');
-      expect(cifrado2.getAlfabeto()).to.be.equal('acbdghijskoz');
-      expect(cifrado2.getClave()).to.be.equal('casa');
+      cifrado2.mensaje.setMensaje('adios');
+      cifrado2.alfabeto.setAlfabeto('acbdghijskoz');
+      cifrado2.clave.setClave('casa');
+      expect(cifrado2.mensaje.getMensaje()).to.be.equal('adios');
+      expect(cifrado2.alfabeto.getAlfabeto()).to.be.equal('acbdghijskoz');
+      expect(cifrado2.clave.getClave()).to.be.equal('casa');
     });
     it('Se comprueban metodo codificar', () => {
       expect(cifrado1.codificar()).to.be.eq('KAMWQUNDO');

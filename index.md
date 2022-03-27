@@ -14,10 +14,6 @@ Curso: 3º, 2021/22
 
 ## EJERCICIO 2. DSIFLIX
 
-#### ESTRUCTURA DE INTERFACES Y CLASES
-
-#### CÓDIGO
-
 ##### INTERFACES
 
 - Steamable<T extends ItemStremeable>: interfaz genérica que contiene el atributo básico y común para toda clase StreamableCollection, esto es una lista de los elementos que contiene el coleccionable y además un método que devuelve los elementos que contiene esa lista. Los tipos de elementos no está definidos ya que se podría crear coleccionables de libros, peliculas, series... que son objetos distintos, pero sí se obliga a que esos objetos tengan definidos unos datos como pueden ser el nombre, fecha estreno/publicacion.. entre otros que son comunes a todo coleccionable y además con tipos conocidos (el nombre siempre será un string por ejemplo), por ello la interfaz tiene como tipo de datos <T extends ItemStremeable>. Esta interfaz extiende otras que contienen métodos comunes y obligados para todas las clases de este tipo.
@@ -443,3 +439,226 @@ describe('Test ejercicio-2.', () => {
 Se hizo test de todos los método definidos y se tubo en cuenta (no en todos los métodos) algún error que pueda surgir como por ejemplo que las listas estén vacias, que no se encuentren los elementos buscados o no haya elementos en la posición indicada para eliminar.
 
 ## EJERCICIO 3. EL CIFRADO INDESCIFRABLE
+
+#### CLASES
+
+- Cifrado: esta clase contiene los atributos básicos que tendrá cualquier cifrado, como son un mensaje de entrada (ya sea para codificar o descodificar), una clave y un alfabeto.
+
+```ts
+export abstract class Cifrado {
+  readonly mensaje: Mensaje;
+  readonly clave: Clave;
+  readonly alfabeto: Alfabeto;
+
+  constructor(mensajeCadena: string, claveCadena: string,
+      alfabetoCadena: string) {
+    if (mensajeCadena == '') {
+      throw new Error(`No se ha introducido un mensaje valido`);
+    }
+    if (claveCadena == '') {
+      throw new Error(`No se ha introducido una clave valida`);
+    }
+    if (alfabetoCadena == '') {
+      throw new Error(`No se ha introducido un alfabeto valido`);
+    }
+    this.clave = new Clave(claveCadena);
+    this.clave.ajustarClave(mensajeCadena.length);
+    this.mensaje = new Mensaje(mensajeCadena);
+    this.alfabeto = new Alfabeto(alfabetoCadena);
+  }
+}
+```
+
+- Alfabeto: clase que crea un objeto que representa un objeto. Tanto en esta clase como la de clave y mensaje convertí las cadenas que se pasan en arrays ya que me pareció más fácil trabajar así que con strings.
+
+```ts
+export class Alfabeto {
+  private alfabeto: string[];
+
+  constructor(private alfabetoCadena: string) {
+    this.alfabeto = alfabetoCadena.split('');
+  }
+
+  public getAlfabeto(): string {
+    return this.alfabeto.join('');
+  }
+  public setAlfabeto(nuevoAlfabeto: string) {
+    this.alfabeto = nuevoAlfabeto.split('');
+  }
+  public size(): number {
+    return this.alfabeto.length;
+  }
+}
+```
+
+- Clave: clase para representar la clave de cifrado.
+
+```ts
+export class Clave {
+  private clave: string[];
+
+  constructor(private claveCadena: string) {
+    this.clave = claveCadena.split('');
+  }
+
+  public getClave(): string {
+    return this.clave.join('');
+  }
+  public setClave(claveNueva: string): void {
+    this.clave = claveNueva.split('');
+  }
+  public ajustarClave(tam: number): string[] {
+    const auxClave: string = '';
+    if (this.clave.length < tam) {
+      auxClave.padEnd(tam, this.getClave());
+    }
+    return auxClave.split('');
+  }
+}
+```
+
+- Mensaje: clase que represnta el mensaje a codificar.
+
+```ts
+export class Mensaje {
+  private mensaje: string[];
+
+  constructor(private mensajeCadena: string) {
+    this.mensaje = mensajeCadena.split('');
+  }
+
+  public getMensaje(): string {
+    return this.mensaje.join('');
+  }
+  public setMensaje(mensajeNueva: string): void {
+    this.mensaje = mensajeNueva.split('');
+  }
+  public size(): number {
+    return this.mensaje.length;
+  }
+}
+```
+
+- CodificarCesar: clase que realiza la operación de codificar usando el método César. Es hija de la clase Cifrado. Para cifrar se busca el índice del caracter por el que se intercambia, para ello, en el método desplazar() se busca el índice en el alfabeto del carácter actual de la clave y ese índice (mas 1 ya que los indices empiezan en 0) es el que indica la cantidad que se debe desplazar el carácter actual. Se suma el índice del carácter actual del mensaje más el desplazamiento obtenido y se obtiene el índice en el alfabeto del carácter sustituto. Se tiene en cuenta siempre que el desplazamiento puede sobrepasar el último carácter del alfabeto y en ese caso debería continuar el desplazamiento por índice 0.
+
+```ts
+export class CodificadorCesar extends Cifrado {
+  constructor(mensajeCadena: string, claveCadena:string,
+      alfabetoCadena:string) {
+    super(mensajeCadena, claveCadena, alfabetoCadena);
+  }
+
+  private desplazar(indiceCaracterActual:number): string {
+    const indiceCaracterMensajeEnAlfabeto: number = this.alfabeto.getAlfabeto().
+            indexOf(this.mensaje.getMensaje()[indiceCaracterActual]);
+    const indiceCaracterClaveEnAlfabeto: number = this.alfabeto.getAlfabeto().
+            indexOf(this.clave.getClave()[indiceCaracterActual]);
+    let indiceCaracterCodificado: number = indiceCaracterMensajeEnAlfabeto +
+    indiceCaracterClaveEnAlfabeto + 1;
+
+    if (indiceCaracterCodificado > this.alfabeto.size() - 1) {
+      indiceCaracterCodificado =
+          indiceCaracterCodificado - this.alfabeto.size();
+    }
+    return this.alfabeto.getAlfabeto()[indiceCaracterCodificado];
+  }
+
+  public codificar(): string {
+    let mensajeCifrado: string = '';
+    let indiceCaracterActual: number = 0;
+    while (this.mensaje.size() > indiceCaracterActual) {
+      const caracterCodificado: string = this.desplazar(indiceCaracterActual);
+      mensajeCifrado = mensajeCifrado.concat('', caracterCodificado);
+      indiceCaracterActual++;
+    }
+    return mensajeCifrado;
+  }
+}
+```
+
+- DecodificadorCesar: clase que representa el métdo para decodificar usando el método César. Para decodificar se usa el mismo método que para cifrar pero teniendo en cuenta que el desplazamito es a la izquierda.
+
+```ts
+export class DecodificadorCesar extends Cifrado {
+  constructor(mensaje: string, clave:string, alfabeto:string) {
+    super(mensaje, clave, alfabeto);
+  }
+
+  private desplazar(indiceCaracterActual:number): string {
+    const indiceCaracterMensajeEnAlfabeto: number =
+        this.alfabeto.getAlfabeto().
+            indexOf(this.mensaje.getMensaje()[indiceCaracterActual]);
+    const indiceCaracterClaveEnAlfabeto: number =
+        this.alfabeto.getAlfabeto().
+            indexOf(this.clave.getClave()[indiceCaracterActual]);
+    let indiceCaracterDecodificado: number = indiceCaracterMensajeEnAlfabeto -
+        (indiceCaracterClaveEnAlfabeto + 1);
+    if (indiceCaracterDecodificado < 0) {
+      indiceCaracterDecodificado =
+          this.alfabeto.size() - Math.abs(indiceCaracterDecodificado);
+    }
+    return this.alfabeto.getAlfabeto()[indiceCaracterDecodificado];
+  }
+
+  public decodificar(): string {
+    let mensajeDescifrado: string = '';
+    let indiceCaracterActual: number = 0;
+    while (this.mensaje.size() > indiceCaracterActual) {
+      const caracterDecodificado: string = this.desplazar(indiceCaracterActual);
+      mensajeDescifrado = mensajeDescifrado.concat('', caracterDecodificado);
+      indiceCaracterActual++;
+    }
+    return mensajeDescifrado;
+  }
+}
+```
+
+#### TEST 
+
+```ts
+describe('Test ejercicio-2', () => {
+  const cifrado1: CodificadorCesar = new CodificadorCesar('HOLAMUNDO', 'CLAVE',
+      'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+  const cifrado2: CodificadorCesar = new CodificadorCesar('HOLAMUNDO', 'CLAVE',
+      'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+  const cifrado3: DecodificadorCesar = new DecodificadorCesar('KAMWQUNDO',
+      'CLAVE', 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+
+  describe('Test clace CifradoCesar', () => {
+    it('Se instancia un objeto de cifrado correctamente', () => {
+      expect(typeof cifrado1).to.be.equal('object');
+    });
+    it('Se comprueba que no se pasan datos vacios', () => {
+      expect(() => {
+        new CodificadorCesar('HolaMundo', 'bbv', '');
+      }).to.throw('No se ha introducido un alfabeto valido');
+      expect(() => {
+        new CodificadorCesar('HolaMundo', '', 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+      }).to.throw('No se ha introducido una clave valida');
+      expect(() => {
+        new CodificadorCesar('', 'hol', 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+      }).to.throw('No se ha introducido un mensaje valido');
+    });
+    it('Se comprueban getters', () => {
+      expect(cifrado1.mensaje.getMensaje()).to.be.equal('HOLAMUNDO');
+      // eslint-disable-next-line max-len
+      expect(cifrado1.alfabeto.getAlfabeto()).to.be.equal('ABCDEFGHIJKLMNÑOPQRSTUVWXYZ');
+      expect(cifrado1.clave.getClave()).to.be.equal('CLAVE');
+    });
+    it('Se comprueban setters', () => {
+      cifrado2.mensaje.setMensaje('adios');
+      cifrado2.alfabeto.setAlfabeto('acbdghijskoz');
+      cifrado2.clave.setClave('casa');
+      expect(cifrado2.mensaje.getMensaje()).to.be.equal('adios');
+      expect(cifrado2.alfabeto.getAlfabeto()).to.be.equal('acbdghijskoz');
+      expect(cifrado2.clave.getClave()).to.be.equal('casa');
+    });
+    it('Se comprueban metodo codificar', () => {
+      expect(cifrado1.codificar()).to.be.eq('KAMWQUNDO');
+    });
+    it('Se comprueban metodo decodificar', () => {
+      expect(cifrado3.decodificar()).to.be.equal('HOLAMUNDO');
+    });
+  });
+});
+````
